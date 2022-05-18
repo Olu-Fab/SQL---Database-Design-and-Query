@@ -1,0 +1,181 @@
+
+/*****************************TASK 3 - DATABASE DESIGN********************************/
+
+CREATE DATABASE CrimeProfile
+GO;
+USE CrimeProfile
+GO;
+
+/***********************CREATING TABLES***********************/
+
+/******Merging all the Individual records into one Table*****/
+
+SELECT * INTO Crimes_Jan17_Dec18 FROM
+(SELECT * FROM [2017-01-greater manchester street]
+UNION ALL
+SELECT * FROM [2017-02-greater-manchester-street]
+UNION ALL
+SELECT * FROM [2017-03-greater-manchester-street]
+UNION ALL
+SELECT * FROM [2017-04-greater-manchester-street]
+UNION ALL
+SELECT * FROM [2017-05-greater-manchester-street]
+UNION ALL
+SELECT * FROM [2017-06-greater-manchester-street]
+UNION ALL
+SELECT * FROM [2017-07-greater-manchester-street]
+UNION ALL
+SELECT * FROM [2017-08-greater-manchester-street]
+UNION ALL
+SELECT * FROM [2017-09-greater-manchester-street]
+UNION ALL
+SELECT * FROM [2017-10-greater-manchester-street]
+UNION ALL
+SELECT * FROM [2017-11-greater-manchester-street]
+UNION ALL
+SELECT * FROM [2017-12-greater-manchester-street]
+UNION ALL
+SELECT * FROM [2018-01-greater-manchester-street]
+UNION ALL
+SELECT * FROM [2018-02-greater-manchester-street]
+UNION ALL
+SELECT * FROM [2018-03-greater-manchester-street]
+UNION ALL
+SELECT * FROM [2018-04-greater-manchester-street]
+UNION ALL
+SELECT * FROM [2018-05-greater-manchester-street]
+UNION ALL
+SELECT * FROM [2018-06-greater-manchester-street]
+UNION ALL
+SELECT * FROM [2018-07-greater-manchester-street]
+UNION ALL
+SELECT * FROM [2018-08-greater-manchester-street]
+UNION ALL
+SELECT * FROM [2018-09-greater-manchester-street]
+UNION ALL
+SELECT * FROM [2018-10-greater-manchester-street]
+UNION ALL
+SELECT * FROM [2018-11-greater-manchester-street]
+UNION ALL
+SELECT * FROM [2018-12-greater-manchester-street])tmp
+
+
+/**********Creating the LSAO Table by Population Age Groups***********/
+
+SELECT * INTO [LSOA_Persons_AgeGroup] FROM
+(SELECT [Area_Code], [LSOA_Name],
+[0]+[1]+[2]+[3]+[4]+[5]+[6]+[7]+[8]+[9]+[10]+[11]+[12]+[13]+[14] AS '(0-14)',
+[15]+[16]+[17]+[18]+[19]+[20]+[21]+[22]+[23]+[24]+[25]+[26]+[27]+[28]+[29] AS '(15-29)',
+[30]+[31]+[32]+[33]+[34]+[35]+[36]+[37]+[38]+[39]+[40]+[41]+[42]+[43]+[44] AS '(30-44)',
+[45]+[46]+[47]+[48]+[49]+[50]+[51]+[52]+[53]+[54]+[55]+[56]+[57]+[58]+[59] AS '(45-59)',
+[60]+[61]+[62]+[63]+[64]+[65]+[66]+[67]+[68]+[69]+[70]+[71]+[72]+[73]+[74] AS '(60-74)',
+[75]+[76]+[77]+[78]+[79]+[80]+[81]+[82]+[83]+[84]+[85]+[86]+[87]+[88]+[89]+[90+] AS '(75_Above)',
+All_Ages AS Total
+FROM [LSOA_2017_Persons]) tmp
+
+/*****************************TABLE TRANSFORMATIONS****************************/
+
+--Creating a new column to accomodate the Geolocation
+ALTER TABLE Crimes_Jan17_Dec18
+ADD Geolocation GEOGRAPHY
+
+--Creating a new column to accommodate the ID
+ALTER TABLE Crimes_Jan17_Dec18
+ADD ID INT IDENTITY
+
+--Add the Primary Key constraint to the ID column
+ALTER TABLE Crimes_Jan17_Dec18
+ADD CONSTRAINT Pk_id PRIMARY KEY NONCLUSTERED (ID)
+
+--Populating the Geolocation column using the SQL geography datatype
+UPDATE Crimes_Jan17_Dec18
+SET Geolocation = GEOGRAPHY::Point(Latitude, Longitude, 4326)
+WHERE Latitude IS NOT NULL AND Longitude IS NOT NULL
+
+GO;
+
+/******************CREATION OF VIEWS****************************************/
+
+
+-- VEHICLE CRIMES IN GREATER MANCHESTER
+CREATE VIEW Vehicle_Crime AS
+SELECT * FROM Crimes_Jan17_Dec18
+WHERE [Crime type] = 'vehicle crime'
+
+GO
+
+--TOTAL CRIMES IN GREATER MANCHESTER BY LSOA AGE GROUPS 
+CREATE VIEW Population_CrimeType_By_Age AS
+SELECT C.[LSOA code],  C.[LSOA name], [Crime type], C.Frequency, P.[(0-14)],
+P.[(15-29)], P.[(30-44)], P.[(45-59)], P.[(60-74)],
+P.[(75_Above)], P.Total
+FROM
+(SELECT [LSOA code], [LSOA name], [Crime type], COUNT([Crime type]) AS Frequency
+FROM Crimes_Jan17_Dec18
+GROUP BY [LSOA code], [LSOA name], [Crime type])AS C
+JOIN LSOA_Persons_AgeGroup AS P
+ON C.[LSOA code] = P.Area_Code
+
+GO;
+
+-- ANTI-SOCIAL CRIMES IN SALFORD
+CREATE VIEW Salford_AntiSocial AS
+SELECT * FROM Crimes_Jan17_Dec18
+WHERE [LSOA name] LIKE '%salford%' AND [Crime type] LIKE '%anti-social%'
+
+GO;
+
+--NUMBER OF CRIMES BY LSOA IN GREATER MANCHESTER
+CREATE VIEW Lsoa_Crime_Count AS
+SELECT [LSOA name], [LSOA code], [Crime type], COUNT([Crime type]) AS Frequency
+FROM Crimes_Jan17_Dec18
+GROUP BY [LSOA code],[LSOA name], [Crime type]
+
+GO;
+
+--NUMBER OF CRIMES BY CRIME TYPE IN GREATER MANCHESTER
+CREATE VIEW Crime_Count AS
+SELECT[Crime type], COUNT([Crime type]) AS no_of_occurrences
+FROM Crimes_Jan17_Dec18
+GROUP BY [Crime type]
+
+GO;
+
+--PUBLIC ORDER CRIMES IN GREATER MANCHESTER
+CREATE VIEW Public_Order_Crimes AS
+SELECT * FROM Crimes_Jan17_Dec18
+WHERE [Crime type] = 'Public order'
+AND Geolocation IS NOT NULL
+
+GO;
+--VIOLENT SEXUAL CRIMES IN GREATER MANCHESTER
+CREATE VIEW Violence_Sexual_Crimes AS
+SELECT * FROM Crimes_Jan17_Dec18
+WHERE [Crime type] = 'Violence and sexual offences'
+AND Geolocation IS NOT NULL
+
+GO;
+--
+--DAMAGE AND ARSON CRIMES IN GREATER MANCHESTER
+CREATE VIEW Damage_Arson_Crimes AS
+SELECT * FROM Crimes_Jan17_Dec18
+WHERE [Crime type] = 'Criminal damage and arson'
+AND Geolocation IS NOT NULL
+
+GO;
+
+--BURGLARY CRIMES IN GREATER MANCHESTER 
+CREATE VIEW Burglary_Crimes AS
+SELECT * FROM Crimes_Jan17_Dec18
+WHERE [Crime type] = 'Burglary'
+AND Geolocation IS NOT NULL
+GO;
+
+--ANTI-SOCIAL CRIMES IN GREATER MANCHESTER
+CREATE VIEW Antisocial_Crimes AS
+SELECT * FROM Crimes_Jan17_Dec18
+WHERE [Crime type] = 'Anti-social behaviour'
+AND Geolocation IS NOT NULL
+
+GO;
+/*********************************END***********************************/

@@ -1,0 +1,569 @@
+
+/*************************TASK 2 - DATABASE DESIGN****************************/
+
+CREATE DATABASE Vietnam_Inequality
+GO;
+USE Vietnam_Inequality
+GO;
+
+--Creating the Schema
+
+CREATE SCHEMA Student
+GO;
+CREATE SCHEMA Teacher
+GO;
+/***************************************************************/
+/******************TABLE CREATIONS*****************************/
+
+--TABLE 1 - STUDENT INFO
+SELECT * INTO [Student_Info] FROM
+		( SELECT UNIQUEID, SCHOOLID, CLASSID, GENDER, ETHNICITY,
+		STUDENTID, PROVINCE, DISTRICTCODE, LOCALITY, STDYLCHD, YLCHILDID
+		FROM vietnam_wave_1
+		WHERE STDCMPLT != 1) tmp;
+		GO
+
+
+--TABLE 2 - FAMILY BACKGROUND
+
+SELECT * INTO [Family_Background] FROM
+		( SELECT UNIQUEID, STDLIV, STDLNGHM, STDMEAL, STPPLHM, STPLSTDY,
+		DAD_READ, DAD_EDUC, MOM_READ, MOM_EDUC
+		FROM vietnam_wave_1
+		WHERE STDCMPLT != 1) tmp;
+		GO;
+
+--TABLE 3 - HOME PROPERTY
+
+SELECT * INTO [Home_Property] FROM
+		( SELECT UNIQUEID, STHVMTEL, STHVTELE, STHVDESK, STHVCHR,
+		STHVLAMP, STHVCOMP, STHVINTR, STHVRADO, STHVCBLE
+		FROM vietnam_wave_1
+		WHERE STDCMPLT != 1) tmp;
+
+--TABLE 4 - COGNITIVE TEST
+SELECT * INTO [Cognitive_Test] FROM
+		( SELECT UNIQUEID, CAST(ENG_RAWSCORE AS FLOAT) ENG_RAWSCORE,
+		CAST(MATH_RAWSCORE AS FLOAT) MATHS_RAWSCORE
+		FROM vietnam_wave_1
+		WHERE STDCMPLT != 1) tmp;
+
+--TABLE 5 - TEACHER EDUCATION
+SELECT * INTO [Teacher_Edu] FROM
+		( SELECT UNIQUEID, ENG_TCHID, ENG_TCLVLEDC, ENG_TCAWDTTL,
+		MATH_TCHID, MATH_TCLVLEDC, MATH_TCAWDTTL
+		FROM vietnam_wave_2) tmp;
+
+--TABLE 6 - TEACHER PROPERTIES
+SELECT * INTO [Teacher_Property] FROM
+		( SELECT UNIQUEID, ENG_TCHID, ENG_TCTELE, ENG_TCRADIO, ENG_TCCOMP,
+		ENG_TCINTRT,ENG_TCTVBOX, MATH_TCHID, MATH_TCTELE, MATH_TCRADIO,
+		MATH_TCCOMP, MATH_TCINTRT, MATH_TCTVBOX
+		FROM vietnam_wave_2) tmp;
+
+/***************************************************************/
+/******************TABLE TRANSFORMATIONS*****************************/
+
+--Transformation for Student Info Table
+
+		 CREATE PROCEDURE PROC_StudentInfo
+ AS
+BEGIN
+
+	   UPDATE [Student_Info]
+	SET GENDER =
+	 CASE
+	 WHEN GENDER = 1 THEN 'Male'
+	 WHEN GENDER = 2 THEN 'Female'
+	 ELSE 'Null'
+	 END;
+
+	   UPDATE [Student_Info]
+	SET		ETHNICITY =
+	 CASE
+	 WHEN ETHNICITY = 1 THEN 'Kinh'
+	 WHEN ETHNICITY= 2 THEN 'HMong'
+	 WHEN ETHNICITY = 3 THEN 'Cham_HRoi'
+	 WHEN ETHNICITY= 4 THEN 'Ede'
+	 WHEN ETHNICITY = 5 THEN 'Ba Na'
+	 WHEN ETHNICITY= 6 THEN 'Nung'
+	 WHEN ETHNICITY = 7 THEN 'Tay'
+	 WHEN ETHNICITY= 8 THEN 'Dao'
+	 WHEN ETHNICITY = 9 THEN 'Giay'
+	 WHEN ETHNICITY= 10 THEN 'Other'
+	 ELSE 'Null'
+	 END;
+
+	   UPDATE [Student_Info]
+	SET		PROVINCE =
+	 CASE
+	 WHEN PROVINCE = 1 THEN 'Ben Tre'
+	 WHEN PROVINCE= 2 THEN 'Da Nang'
+	 WHEN PROVINCE = 3 THEN 'Hung Yen'
+	 WHEN PROVINCE = 4 THEN 'Lao Cai'
+	 WHEN PROVINCE = 5 THEN 'Phu Yen'
+	 ELSE 'Null'
+	 END;
+
+
+	  UPDATE [Student_Info]
+	SET LOCALITY =
+	 CASE
+	 WHEN LOCALITY = 1 THEN 'Rural'
+	 WHEN LOCALITY = 2 THEN 'Urban'
+	 ELSE 'Null'
+	 END;
+
+	   UPDATE [Student_Info]
+	SET STDYLCHD =
+	 CASE
+	 WHEN STDYLCHD = 0 THEN 'No'
+	 WHEN STDYLCHD = 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+	  END;
+
+	 EXECUTE PROC_StudentInfo
+
+--Adding the primary key constraint to the UNIQUE ID column
+
+ALTER TABLE [Student_Info]
+ALTER COLUMN UNIQUEID VARCHAR(50) NOT NULL
+
+ALTER TABLE [Student_Info]
+ADD CONSTRAINT StuInfo_pk PRIMARY KEY NONCLUSTERED (UNIQUEID)
+
+
+
+--Transformations for Family Background Table
+
+		CREATE PROCEDURE PROC_FamilyBackground
+ AS
+BEGIN
+
+	   UPDATE [Family_Background]
+	SET STDLIV =
+	 CASE
+	 WHEN STDLIV = 1 THEN 'At home with my parents'
+	 WHEN STDLIV = 2 THEN 'With other family or friends'
+	 WHEN STDLIV = 3 THEN 'In a school hostel'
+	 WHEN STDLIV = 4 THEN 'In a private hostel'
+	 WHEN STDLIV = 5 THEN 'Other'
+	 ELSE 'Null'
+	 END;
+
+	   UPDATE [Family_Background]
+	SET		STDLNGHM =
+	 CASE
+	 WHEN STDLNGHM = 0 THEN 'Never'
+	 WHEN STDLNGHM= 1 THEN 'Sometimes'
+	 WHEN STDLNGHM = 2 THEN 'Always'
+	 ELSE 'Null'
+	 END;
+
+	   UPDATE [Family_Background]
+	SET		STDMEAL =
+	 CASE
+	 WHEN STDMEAL = 1 THEN '1 Meal'
+	 WHEN STDMEAL= 2 THEN '2 Meals'
+	 WHEN STDMEAL = 3 THEN '3 or More Meals'
+	 ELSE 'Null'
+	 END;
+
+
+	  UPDATE [Family_Background]
+	SET STPLSTDY =
+	 CASE
+	 WHEN STPLSTDY = 0 THEN 'No'
+	 WHEN STPLSTDY = 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+
+	   UPDATE [Family_Background]
+	SET DAD_READ =
+	 CASE
+	 WHEN DAD_READ = 0 THEN 'No'
+	 WHEN DAD_READ = 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+
+	   UPDATE [Family_Background]
+	SET DAD_EDUC =
+	 CASE
+	 WHEN DAD_EDUC = 0 THEN 'Never been to school'
+	 WHEN DAD_EDUC = 1 THEN 'Primary school (Grades 1-5)'
+	  WHEN DAD_EDUC = 2 THEN 'Lower secondary school (Grades 6-9)'
+	 WHEN DAD_EDUC = 3 THEN 'Intermediate vocational training'
+	  WHEN DAD_EDUC = 4 THEN 'Upper secondary school (Grades 10)'
+	  WHEN DAD_EDUC = 5 THEN 'Higher education (e.g. university/college) '
+	 WHEN DAD_EDUC = 6 THEN 'Dont know'
+	 ELSE 'Null'
+	 END;
+
+	 
+	   UPDATE [Family_Background]
+	SET MOM_READ =
+	 CASE
+	 WHEN MOM_READ = 0 THEN 'No'
+	 WHEN MOM_READ = 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+
+	   UPDATE [Family_Background]
+	SET MOM_EDUC =
+	 CASE
+	 WHEN MOM_EDUC = 0 THEN 'Never been to school'
+	 WHEN MOM_EDUC = 1 THEN 'Primary school (Grades 1-5)'
+	  WHEN MOM_EDUC = 2 THEN 'Lower secondary school (Grades 6-9)'
+	 WHEN MOM_EDUC = 3 THEN 'Intermediate vocational training'
+	  WHEN MOM_EDUC = 4 THEN 'Upper secondary school (Grades 10)'
+	  WHEN MOM_EDUC = 5 THEN 'Higher education (e.g. university/college) '
+	 WHEN MOM_EDUC = 6 THEN 'Dont know'
+	 ELSE 'Null'
+	 END;
+	  END;
+
+	 EXECUTE PROC_FamilyBackground
+
+--Adding the primary key constraint to the UNIQUE ID Cloumn
+ALTER TABLE [Family_Background]
+ALTER COLUMN UNIQUEID VARCHAR(50) NOT NULL
+
+ALTER TABLE [Family_Background]
+ADD CONSTRAINT FB_pk PRIMARY KEY NONCLUSTERED (UNIQUEID)
+
+
+
+--Transformations for Home Property Table
+
+		CREATE PROCEDURE PROC_HomeProperty
+ AS
+BEGIN
+
+	   UPDATE [Home_Property]
+	SET STHVMTEL =
+	 CASE
+	 WHEN STHVMTEL = 0 THEN 'No'
+	 WHEN STHVMTEL = 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+
+	   UPDATE [Home_Property]
+	SET		STHVTELE =
+	 CASE
+	 WHEN STHVTELE = 0 THEN 'No'
+	 WHEN STHVTELE= 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+
+	   UPDATE [Home_Property]
+	SET		STHVDESK =
+	 CASE
+	 WHEN STHVDESK = 0 THEN 'No'
+	 WHEN STHVDESK= 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+
+	   UPDATE [Home_Property]
+	SET		STHVCHR =
+	 CASE
+	 WHEN STHVCHR = 0 THEN 'No'
+	 WHEN STHVCHR= 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+
+	 	   UPDATE [Home_Property]
+	SET		STHVLAMP =
+	 CASE
+	 WHEN STHVLAMP = 0 THEN 'No'
+	 WHEN STHVLAMP= 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+
+	 	   UPDATE [Home_Property]
+	SET		STHVCOMP =
+	 CASE
+	 WHEN STHVCOMP = 0 THEN 'No'
+	 WHEN STHVCOMP= 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+
+	    UPDATE [Home_Property]
+	SET		STHVINTR =
+	 CASE
+	 WHEN STHVINTR = 0 THEN 'No'
+	 WHEN STHVINTR= 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+
+	    UPDATE [Home_Property]
+	SET		STHVRADO =
+	 CASE
+	 WHEN STHVRADO = 0 THEN 'No'
+	 WHEN STHVRADO= 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+
+	     UPDATE [Home_Property]
+	SET		STHVCBLE =
+	 CASE
+	 WHEN STHVCBLE = 0 THEN 'No'
+	 WHEN STHVCBLE= 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+	 END;
+
+	 EXECUTE PROC_HomeProperty
+
+--Adding the primary key constraint to the UNIQUE ID Cloumn
+ALTER TABLE [Home_Property]
+ALTER COLUMN UNIQUEID VARCHAR(50) NOT NULL
+
+ALTER TABLE [Home_Property]
+ADD CONSTRAINT HP_pk PRIMARY KEY NONCLUSTERED (UNIQUEID)
+
+
+
+--Adding the primary key constraint to the UNIQUE ID Cloumn
+ALTER TABLE [Cognitive_Test]
+ALTER COLUMN UNIQUEID VARCHAR(50) NOT NULL
+
+ALTER TABLE [Cognitive_Test]
+ADD CONSTRAINT CogTest_pk PRIMARY KEY NONCLUSTERED (UNIQUEID)
+
+
+
+
+--Transformations for Teacher Education Table
+		CREATE PROCEDURE PROC_TeacherEdu
+ AS
+BEGIN
+
+	   UPDATE [Teacher_Edu]
+	SET ENG_TCLVLEDC =
+	 CASE
+	 WHEN ENG_TCLVLEDC = 1 THEN 'Upper secondary or equivalent'
+	 WHEN ENG_TCLVLEDC = 2 THEN 'Vocational training school '
+	 WHEN ENG_TCLVLEDC = 3 THEN 'College education'
+	 WHEN ENG_TCLVLEDC = 4 THEN 'University education (undergraduate) '
+	 WHEN ENG_TCLVLEDC = 5 THEN 'University education (postgraduate)'
+	 ELSE 'Null'
+	 END;
+
+	    UPDATE [Teacher_Edu]
+	SET MATH_TCLVLEDC =
+	 CASE
+	 WHEN MATH_TCLVLEDC = 1 THEN 'Upper secondary or equivalent'
+	 WHEN MATH_TCLVLEDC = 2 THEN 'Vocational training school '
+	 WHEN MATH_TCLVLEDC = 3 THEN 'College education'
+	 WHEN MATH_TCLVLEDC = 4 THEN 'University education (undergraduate) '
+	 WHEN MATH_TCLVLEDC = 5 THEN 'University education (postgraduate)'
+	 ELSE 'Null'
+	 END;
+
+  UPDATE [Teacher_Edu]
+	SET ENG_TCAWDTTL =
+	 CASE
+	 WHEN ENG_TCAWDTTL = 0 THEN 'Never been an excellent teacher'
+	 WHEN ENG_TCAWDTTL = 1 THEN 'Yes, school level'
+	 WHEN ENG_TCAWDTTL = 2 THEN 'Yes, district level '
+	 WHEN ENG_TCAWDTTL = 3 THEN 'Yes, province level or higher'
+	 ELSE 'Null'
+	 END;
+
+	   UPDATE [Teacher_Edu]
+	SET MATH_TCAWDTTL =
+	 CASE
+	 WHEN MATH_TCAWDTTL = 0 THEN 'Never been an excellent teacher'
+	 WHEN MATH_TCAWDTTL = 1 THEN 'Yes, school level'
+	 WHEN MATH_TCAWDTTL = 2 THEN 'Yes, district level '
+	 WHEN MATH_TCAWDTTL = 3 THEN 'Yes, province level or higher'
+	 ELSE 'Null'
+	 END;
+	 END;
+
+	 EXECUTE PROC_TeacherEdu
+
+--Adding the primary key constraint to the UNIQUE ID Cloumn
+ALTER TABLE [Teacher_Edu]
+ALTER COLUMN UNIQUEID VARCHAR(50) NOT NULL
+
+ALTER TABLE [Teacher_Edu]
+ADD CONSTRAINT TEdu_pk PRIMARY KEY NONCLUSTERED (UNIQUEID)
+
+
+--Transformations for Teacher Property Table
+		CREATE PROCEDURE PROC_TeacherProperty
+ AS
+BEGIN
+
+	   UPDATE [Teacher_Property]
+	SET ENG_TCTELE =
+	 CASE
+	 WHEN ENG_TCTELE = 0 THEN 'No'
+	 WHEN ENG_TCTELE = 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+
+	   UPDATE [Teacher_Property]
+	SET MATH_TCTELE =
+	 CASE
+	 WHEN MATH_TCTELE = 0 THEN 'No'
+	 WHEN MATH_TCTELE = 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+
+	   UPDATE [Teacher_Property]
+	SET		 ENG_TCRADIO =
+	 CASE
+	 WHEN  ENG_TCRADIO = 0 THEN 'No'
+	 WHEN  ENG_TCRADIO= 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+
+	   UPDATE [Teacher_Property]
+	SET		 MATH_TCRADIO =
+	 CASE
+	 WHEN  MATH_TCRADIO = 0 THEN 'No'
+	 WHEN  MATH_TCRADIO= 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+
+		 UPDATE [Teacher_Property]
+	SET		  ENG_TCCOMP =
+	 CASE
+	 WHEN   ENG_TCCOMP= 0 THEN 'No'
+	 WHEN   ENG_TCCOMP= 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+
+		 UPDATE [Teacher_Property]
+	SET		  MATH_TCCOMP =
+	 CASE
+	 WHEN   MATH_TCCOMP= 0 THEN 'No'
+	 WHEN   MATH_TCCOMP= 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+
+	 	 UPDATE [Teacher_Property]
+	SET		  ENG_TCINTRT =
+	 CASE
+	 WHEN   ENG_TCINTRT= 0 THEN 'No'
+	 WHEN   ENG_TCINTRT= 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+
+	  	 UPDATE [Teacher_Property]
+	SET		  MATH_TCINTRT =
+	 CASE
+	 WHEN   MATH_TCINTRT= 0 THEN 'No'
+	 WHEN   MATH_TCINTRT= 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+
+	 	 UPDATE [Teacher_Property]
+	SET		  ENG_TCTVBOX =
+	 CASE
+	 WHEN   ENG_TCTVBOX= 0 THEN 'No'
+	 WHEN   ENG_TCTVBOX= 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+
+	 	 UPDATE [Teacher_Property]
+	SET		  MATH_TCTVBOX =
+	 CASE
+	 WHEN   MATH_TCTVBOX= 0 THEN 'No'
+	 WHEN   MATH_TCTVBOX= 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+	 END;
+
+	 EXECUTE PROC_TeacherProperty
+
+
+	 --Adding the primary key constraint to the UNIQUE ID Cloumn
+ALTER TABLE [Teacher_Property]
+ALTER COLUMN UNIQUEID VARCHAR(50) NOT NULL
+
+ALTER TABLE [Teacher_Property]
+ADD CONSTRAINT Tppt_pk PRIMARY KEY NONCLUSTERED (UNIQUEID)
+
+GO;
+
+/***************************************************************/
+/******************CREATION OF VIEWS*****************************/
+--VIEW 1
+--Create View to Measure Dad's Education in realation to Student Test scores
+
+CREATE VIEW Dads_Education AS
+	SELECT FB.DAD_EDUC, ROUND(AVG(CT.MATHS_RAWSCORE), 2) AVG_MATHS_SCORE,
+	ROUND(AVG(ENG_RAWSCORE), 2) AVG_ENG_SCORE
+	FROM Family_Background AS FB
+	JOIN Cognitive_Test AS CT
+	ON FB.UNIQUEID = CT.UNIQUEID
+	WHERE CT.ENG_RAWSCORE != 0 AND CT.MATHS_RAWSCORE != 0 AND FB.DAD_EDUC IS NOT NULL
+	GROUP BY FB.DAD_EDUC
+	GO;
+
+--VIEW 2
+	--Create View to Measure Mom's Education in realation to Student Test scores
+
+  CREATE VIEW Moms_Education AS
+	SELECT FB.MOM_EDUC, ROUND(AVG(CT.MATHS_RAWSCORE), 2) AVG_MATHS_SCORE,
+	ROUND(AVG(ENG_RAWSCORE), 2) AVG_ENG_SCORE
+	FROM Family_Background AS FB
+	JOIN Cognitive_Test AS CT
+	ON FB.UNIQUEID = CT.UNIQUEID
+	WHERE CT.ENG_RAWSCORE != 0 AND CT.MATHS_RAWSCORE != 0
+	GROUP BY FB.MOM_EDUC
+	GO;
+--VIEW 3
+	--Create View to Measure Test score Across Localities
+
+	CREATE VIEW Locality AS
+SELECT LOCALITY, COUNT(LOCALITY) AS No_of_students, ROUND(AVG(CT.ENG_RAWSCORE), 2) AVG_ENG_SCORE, 
+ROUND(AVG(CT.MATHS_RAWSCORE), 2) AVG_MATHS_SCORE
+FROM Student_Info AS SI
+JOIN Cognitive_Test AS CT
+ON SI.UNIQUEID = CT.UNIQUEID
+GROUP BY LOCALITY
+GO;
+
+--VIEW 4
+	--Create View to Measure Study Space and Student Test Scores
+
+CREATE VIEW Study_Space AS
+SELECT FB.STPLSTDY, ROUND(AVG(CT.MATHS_RAWSCORE), 2) AVG_MATHS_SCORE, ROUND(AVG(CT.ENG_RAWSCORE), 2) AVG_ENG_SCORE
+FROM [Family_Background] AS FB
+JOIN [Cognitive_Test] AS CT
+ON FB.UNIQUEID = CT.UNIQUEID
+WHERE CT.ENG_RAWSCORE != 0 AND CT.MATHS_RAWSCORE != 0
+GROUP BY FB.STPLSTDY
+
+GO;
+
+--VIEW 5
+	--Create View to Measure English Teacher Education Level and Student Test Scores in English
+
+	CREATE VIEW ENGTeacher_Education AS
+	SELECT TE.ENG_TCLVLEDC, ROUND(AVG(CT.ENG_RAWSCORE), 2) AVG_ENG_SCORE
+	FROM [Teacher_Edu] AS TE
+	JOIN Cognitive_Test AS CT
+	ON TE.UNIQUEID = CT.UNIQUEID
+	WHERE CT.ENG_RAWSCORE != 0 AND ENG_TCLVLEDC IS NOT NULL
+	GROUP BY TE.ENG_TCLVLEDC
+
+	GO;
+--VIEW 6
+	--Create View to Measure Math Teacher Education Level and Student Test Scores in Math
+
+	CREATE VIEW MATHTeacher_Education AS
+	SELECT TE.MATH_TCLVLEDC, ROUND(AVG(CT.MATHS_RAWSCORE), 2) AVG_MATH_SCORE
+	FROM [Teacher_Edu] AS TE
+	JOIN Cognitive_Test AS CT
+	ON TE.UNIQUEID = CT.UNIQUEID
+	WHERE CT.MATHS_RAWSCORE != 0
+	GROUP BY TE.MATH_TCLVLEDC
+GO;
+
+/******************************************END*********************************************/

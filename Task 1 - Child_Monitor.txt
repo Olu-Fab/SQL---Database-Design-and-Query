@@ -1,0 +1,883 @@
+
+/*****************************TASK 1 - DATABASE DESIGN********************************/
+Create Database Child_Monitor
+Go;
+Use Child_Monitor
+Go;
+
+--Creating the Schema
+CREATE SCHEMA Child
+Go;
+CREATE SCHEMA Household
+Go;
+CREATE SCHEMA Country
+Go;
+/*******************************************************************************************/
+                            -------TABLE CREATIONS--------
+/******************************************************************************************/
+
+/************************TABLE 1 - CHILD DEMOGRAPHY TABLE******************************/
+
+/***********Creating a procedure that creates the Demography table***************/
+
+CREATE PROCEDURE TabChildDemography
+AS
+BEGIN
+	--Declaring variables for the procedure
+	DECLARE @schemaname NVARCHAR(20) ,@fullname NVARCHAR(20), @sql NVARCHAR(MAX),
+	@drop NVARCHAR(40), @columns NVARCHAR(MAX)
+
+	SET @schemaname = 'Child' --Sets the name of the schema
+	SET @fullname = @schemaname + '.' + 'Demography' --sets the table name including the schema
+	SET @columns = ' childid, round, chsex, chethnic, chldrel, agemon,
+						marrcohab, marrcohab_age, birth, birth_age' --sets the applicable columns
+	--SQL query for the table creation
+	SET @sql = 'SELECT * INTO ' + @fullname + ' FROM
+	(SELECT ' + @columns + ' FROM Country.Ethiopia
+	UNION ALL
+	SELECT ' + @columns + ' FROM Country.India
+	UNION ALL
+	SELECT ' + @columns + ' FROM Country.Peru
+	UNION ALL
+	SELECT ' + @columns + ' FROM Country.Vietnam) tmp';
+	SET @drop = 'DROP TABLE IF EXISTS ' + @fullname --drops the table if it already exist
+	EXEC (@drop)
+	EXEC (@sql ) 
+
+END
+EXEC TabChildDemography
+
+GO
+
+/*********************************TABLE 2 - CHILD LOCATION TABLE********************************/
+/*******************Creating a procedure that creates the Location table**********************/
+
+CREATE PROCEDURE TabChildLocation
+AS
+BEGIN
+	--Declaring variables for the procedure
+	DECLARE @schemaname NVARCHAR(20) ,@fullname NVARCHAR(20), @sql NVARCHAR(MAX),
+	@drop NVARCHAR(40), @columns NVARCHAR(MAX)
+
+	SET @schemaname = 'Child' --Sets the name of the schema
+	SET @fullname = @schemaname + '.' + 'Location' --sets the table name including the schema
+	SET @columns = ' childid, round, clustid, typesite,
+					region, dint, yc, childloc ' --sets the applicable columns
+	--SQL query for the table creation
+	SET @sql = 'SELECT * INTO ' + @fullname + ' FROM
+	(SELECT ' + @columns + ' FROM Country.Ethiopia
+	UNION ALL
+	SELECT ' + @columns + ' FROM Country.India
+	UNION ALL
+	SELECT ' + @columns + ' FROM Country.Peru
+	UNION ALL
+	SELECT ' + @columns + ' FROM Country.Vietnam) tmp';
+	SET @drop = 'DROP TABLE IF EXISTS ' + @fullname --drops the table if it already exist
+
+	EXEC (@drop)
+	EXEC (@sql ) 
+END
+EXECUTE TabChildLocation
+
+/************************************TABLE 3 - PHYSICAL TABLE ********************************/
+/*******************Creating a procedure that creates the Physical table********************/
+
+CREATE PROCEDURE TabChildPhysical
+AS
+BEGIN
+	--Declaring variables for the procedure
+	DECLARE @schemaname NVARCHAR(20) ,@fullname NVARCHAR(20), @sql NVARCHAR(MAX),
+	@drop NVARCHAR(40), @columns NVARCHAR(MAX)
+
+	SET @schemaname = 'Child' --Sets the name of the schema
+	SET @fullname = @schemaname + '.' + 'Physical' --sets the table name including the schema
+	SET @columns = ' childid, round, chweight, chheight, bmi,zwfa,zhfa, zbfa, zwfl,
+					fwfa, fhfa, fbfa, fwfl, underweight, stunting ' --sets the applicable columns
+	--SQL query for the table creation
+	SET @sql = 'SELECT * INTO ' + @fullname + ' FROM
+	(SELECT ' + @columns + ' FROM Country.Ethiopia
+	UNION ALL
+	SELECT ' + @columns + ' FROM Country.India
+	UNION ALL
+	SELECT ' + @columns + ' FROM Country.Peru
+	UNION ALL
+	SELECT ' + @columns + ' FROM Country.Vietnam) tmp';
+	SET @drop = 'DROP TABLE IF EXISTS ' + @fullname --drops the table if it already exist
+	EXEC (@drop)
+	EXEC (@sql ) 
+END
+EXECUTE TabChildPhysical
+
+GO;
+
+/****************************TABLE 4 - IMMUNIZATION TABLE*************************************/
+/***************Creating a procedure that creates the Immunization table********************/
+
+CREATE PROCEDURE TabChildImmunization
+AS
+BEGIN
+	--Declaring variables for the procedure
+	DECLARE @schemaname NVARCHAR(20) ,@fullname NVARCHAR(20), @sql NVARCHAR(MAX),
+	@drop NVARCHAR(40), @columns NVARCHAR(MAX)
+
+	SET @schemaname = 'Child' --Sets the name of the schema
+	SET @fullname = @schemaname + '.' + 'Immunization' --sets the table name including the schema
+	SET @columns = '  childid, round, bwght,bwdoc, numante, tetanus, delivery, bcg, measles,
+						polio, dpt, hib ' --sets the applicable columns
+	--SQL query for the table creation
+	SET @sql = 'SELECT * INTO ' + @fullname + ' FROM
+	(SELECT ' + @columns + ' FROM Country.Ethiopia
+	UNION ALL
+	SELECT ' + @columns + ' FROM Country.India
+	UNION ALL
+	SELECT ' + @columns + ' FROM Country.Peru
+	UNION ALL
+	SELECT ' + @columns + ' FROM Country.Vietnam) tmp';
+	SET @drop = 'DROP TABLE IF EXISTS ' + @fullname --drops the table if it already exist
+	EXEC (@drop)
+	EXEC (@sql ) 
+END
+EXECUTE TabChildImmunization
+
+/*********************************TABLE 5 - HEALTH TABLE ********************************/
+/**********************Creating a procedure that creates the Health table**************/
+
+CREATE PROCEDURE TabChildHealth
+AS
+BEGIN
+	--Declaring variables for the procedure
+	DECLARE @schemaname NVARCHAR(20) ,@fullname NVARCHAR(20), @sql NVARCHAR(MAX),
+	@drop NVARCHAR(40), @columns NVARCHAR(MAX)
+
+	SET @schemaname = 'Child' --Sets the name of the schema
+	SET @fullname = @schemaname + '.' + 'Health' --sets the table name including the schema
+	SET @columns = '  childid, round, chmightdie, chillness, chinjury, chhprob, chdisability,
+					chdisscale, chhrel, chhealth, cladder ' --sets the applicable columns
+	--SQL query for the table creation
+	SET @sql = 'SELECT * INTO ' + @fullname + ' FROM
+	(SELECT ' + @columns + ' FROM Country.Ethiopia
+	UNION ALL
+	SELECT ' + @columns + ' FROM Country.India
+	UNION ALL
+	SELECT ' + @columns + ' FROM Country.Peru
+	UNION ALL
+	SELECT ' + @columns + ' FROM Country.Vietnam) tmp';
+	SET @drop = 'DROP TABLE IF EXISTS ' + @fullname --drops the table if it already exist
+	EXEC (@drop)
+	EXEC (@sql ) 
+END;
+EXECUTE TabChildHealth;
+
+/*********************************TABLE 6 - SMOKE/DRINK TABLE ********************************/
+/*********************Creating a procedure that creates the Smoke/Drink table***************/
+
+CREATE PROCEDURE TabChildSmoke_Drink
+AS
+BEGIN
+	--Declaring variables for the procedure
+	DECLARE @schemaname NVARCHAR(20) ,@fullname NVARCHAR(20), @sql NVARCHAR(MAX),
+	@drop NVARCHAR(40), @columns NVARCHAR(MAX)
+
+	SET @schemaname = 'Child' --Sets the name of the schema
+	SET @fullname = @schemaname + '.' + 'Smoke_Drink' --sets the table name including the schema
+	SET @columns = '  childid, round, chsmoke, chalcohol, chrephealth1, chrephealth2,
+					chrephealth3, chrephealth4 ' --sets the applicable columns
+
+	--SQL query for the table creation
+	SET @sql = 'SELECT * INTO ' + @fullname + ' FROM
+	(SELECT ' + @columns + ' FROM Country.Ethiopia
+	UNION ALL
+	SELECT ' + @columns + ' FROM Country.India
+	UNION ALL
+	SELECT ' + @columns + ' FROM Country.Peru
+	UNION ALL
+	SELECT ' + @columns + ' FROM Country.Vietnam) tmp';
+	SET @drop = 'DROP TABLE IF EXISTS ' + @fullname --drops the table if it already exist
+	EXEC (@drop)
+	EXEC (@sql ) 
+END;
+EXECUTE TabChildSmoke_Drink;
+
+
+/*********************************TABLE 7 - EDUCATION TABLE ********************************/
+/*******************Creating a procedure that creates the Education table*******************/
+
+CREATE PROCEDURE TabChildEducation
+AS
+BEGIN
+	--Declaring variables for the procedure
+	DECLARE @schemaname NVARCHAR(20) ,@fullname NVARCHAR(20), @sql NVARCHAR(MAX),
+	@drop NVARCHAR(40), @columns NVARCHAR(MAX)
+
+	SET @schemaname = 'Child' --Sets the name of the schema
+	SET @fullname = @schemaname + '.' + 'Education' --sets the table name including the schema
+	SET @columns = '  childid, round, preprim, agegr1, enrol, entype,
+						timesch, levlread, levlwrit, literate ' --sets the applicable columns
+	--SQL query for the table creation
+	SET @sql = 'SELECT * INTO ' + @fullname + ' FROM
+	(SELECT ' + @columns + ' FROM Country.Ethiopia
+	UNION ALL
+	SELECT ' + @columns + ' FROM Country.India
+	UNION ALL
+	SELECT ' + @columns + ' FROM Country.Peru
+	UNION ALL
+	SELECT ' + @columns + ' FROM Country.Vietnam) tmp';
+	SET @drop = 'DROP TABLE IF EXISTS ' + @fullname --drops the table if it already exist
+	EXEC (@drop)
+	EXEC (@sql ) 
+END
+EXECUTE TabChildEducation
+
+/*********************************TABLE 8 - HOUSEHOLD HEAD TABLE ********************************/
+/*******************Creating a procedure that creates the Household Head table*******************/
+
+CREATE PROCEDURE TabHouseholdHead
+AS
+BEGIN
+	--Declaring variables for the procedure
+	DECLARE @schemaname NVARCHAR(20) ,@fullname NVARCHAR(20), @sql NVARCHAR(MAX),
+	@drop NVARCHAR(40), @columns NVARCHAR(MAX)
+
+	SET @schemaname = 'Household' --Sets the name of the schema
+	SET @fullname = @schemaname + '.' + 'Head' --sets the table name including the schema
+	SET @columns = '  childid, round, headid, headage,headsex, headrel ' --sets the applicable columns
+	--SQL query for the table creation
+	SET @sql = 'SELECT * INTO ' + @fullname + ' FROM
+	(SELECT ' + @columns + ' FROM Country.Ethiopia
+	UNION ALL
+	SELECT ' + @columns + ' FROM Country.India
+	UNION ALL
+	SELECT ' + @columns + ' FROM Country.Peru
+	UNION ALL
+	SELECT ' + @columns + ' FROM Country.Vietnam) tmp';
+	SET @drop = 'DROP TABLE IF EXISTS ' + @fullname --drops the table if it already exist
+	EXEC (@drop)
+	EXEC (@sql ) 
+END
+EXECUTE TabHouseholdHead
+
+/*********************************TABLE TRANSFORMATIONS ********************************/
+
+/*******************TRANSFORMATIONS FOR TABLE 1************************/
+
+---Replace Encodings for the Child Demography Table
+ CREATE PROCEDURE Transform_Demography
+ AS
+ BEGIN
+
+UPDATE [Child].[Demography]
+	SET chsex=
+	 CASE
+	 WHEN chsex = 1 THEN 'Male'
+	 WHEN chsex = 2 THEN 'Female'
+	 ELSE 'Null'
+	 END;
+
+UPDATE [Child].[Demography]
+	SET chethnic=
+	 CASE
+	 WHEN chethnic = 99 THEN 'NK'
+	 WHEN chethnic = 10 THEN 'Other'
+	 WHEN chethnic = 11 THEN 'Agew'
+	 WHEN chethnic = 12 THEN 'Amhara'
+	 WHEN chethnic = 13 THEN 'Gurage'
+	 WHEN chethnic = 14 THEN 'Hadiva'
+	 WHEN chethnic = 15 THEN 'Kambata'
+	 WHEN chethnic = 16 THEN 'Oromo'
+	 WHEN chethnic = 17 THEN 'Sidama'
+	 WHEN chethnic = 18 THEN 'Tigrian'
+	 WHEN chethnic = 19 THEN 'Wolavta'
+	 WHEN chethnic = 21 THEN 'SC'
+	 WHEN chethnic = 22 THEN 'ST'
+	 WHEN chethnic = 23 THEN 'BC'
+	 WHEN chethnic = 24 THEN 'Other'
+	 WHEN chethnic = 31 THEN 'White'
+	 WHEN chethnic = 32 THEN 'Mestizo'
+	 WHEN chethnic = 33 THEN 'Native of the Amazon'
+	 WHEN chethnic = 34 THEN 'Negro'
+	 WHEN chethnic = 35 THEN 'Asiatic'
+	 WHEN chethnic = 41 THEN 'Kinh'
+	 WHEN chethnic = 42 THEN ' HMong'
+	 WHEN chethnic = 43 THEN 'Cham'
+	 WHEN chethnic = 44 THEN 'Ede'
+	 WHEN chethnic = 45 THEN 'Bana'
+	 WHEN chethnic = 46 THEN 'Nung'
+	 WHEN chethnic = 47 THEN 'Tay'
+	 WHEN chethnic = 48 THEN 'Dao'
+	 WHEN chethnic = 100 THEN 'Other, Hindu'
+	 WHEN chethnic = 101 THEN 'Other, Muslim'
+	 WHEN chethnic = 102 THEN 'Other, Buddhist'
+	 WHEN chethnic = 104 THEN 'Other, Christian'
+	 ELSE 'Null'
+	 END ;
+
+	 UPDATE [Child].[Demography]
+	SET marrcohab =
+	 CASE
+	 WHEN marrcohab = 0 THEN 'No'
+	 WHEN marrcohab = 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+
+	  UPDATE [Child].[Demography]
+	SET birth =
+	 CASE
+	 WHEN birth = 0 THEN 'No'
+	 WHEN birth = 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+
+	 UPDATE [Child].[Demography]
+	SET chldrel =
+	 CASE
+
+	WHEN chldrel = 1 THEN 'christian'
+	WHEN chldrel = 2 THEN 'muslim'
+	WHEN chldrel = 3 THEN 'buddhist'
+	WHEN chldrel = 4 THEN 'hindu'
+	WHEN chldrel = 5 THEN 'catholic'
+	WHEN chldrel = 6 THEN 'protestant'
+	WHEN chldrel = 7 THEN 'orthodox'
+	WHEN chldrel = 8 THEN 'sikh'
+	WHEN chldrel = 9 THEN  'evangelist'
+	WHEN chldrel = 10 THEN 'mormon'
+	WHEN chldrel = 11 THEN 'ancestor worship'
+	WHEN chldrel = 12 THEN 'hao hao'
+	WHEN chldrel = 13 THEN 'cao dai'
+	WHEN chldrel = 14 THEN 'none'
+	WHEN chldrel = 15 THEN 'other'
+	WHEN chldrel = 99 THEN  'nk'
+	 ELSE 'Null'
+	 END;
+	 
+	 END;
+
+	 EXECUTE Transform_Demography
+
+ --Creating Composite Key from the Demography Table 
+
+ --alter child id and round columns to Not-Null
+	ALTER TABLE [Child].[Demography]
+	ALTER COLUMN childid varchar(50) NOT NULL;
+
+	ALTER TABLE [Child].[Demography]
+	ALTER COLUMN round varchar(50) NOT NULL;
+
+	--Alter table to create composite key
+
+	ALTER TABLE [Child].[Demography]
+	ADD CONSTRAINT PK_ChildRound PRIMARY KEY (childid,round);
+
+
+GO
+
+/*******************TRANSFORMATIONS FOR TABLE 2************************/
+---Replace Encodings for the Child Location Table
+
+	 CREATE PROCEDURE Transform_Location
+ AS
+ BEGIN
+
+UPDATE [Child].[Location]
+	SET typesite =
+	 CASE
+	 WHEN typesite = 1 THEN 'Urban'
+	 WHEN typesite = 2 THEN 'Rural'
+	 ELSE 'Null'
+	 END;
+ UPDATE [Child].[Location]
+	SET region =
+	 CASE
+	WHEN region = 1	THEN 'Tigray'
+	WHEN region = 2	THEN 'Afar'
+	WHEN region = 3	THEN 'Amhara'
+	WHEN region = 4	THEN 'Oromiya'
+	WHEN region = 5	THEN 'Somali'
+	WHEN region = 6	THEN 'Benshangul Gumz'
+	WHEN region = 7	THEN 'SNNP'
+	WHEN region = 12 THEN 'Gambela'
+	WHEN region = 13 THEN 'Harari'
+	WHEN region = 14 THEN 'Addis Ababa City Administration'
+	WHEN region = 15 THEN 'Dire Dawa City Administration'
+	WHEN region = 24 THEN 'Others'
+	WHEN region = 23 THEN 'Telangana'
+	WHEN region = 77 THEN 'Not known'
+	WHEN region = 22 THEN 'Rayalaseema'
+	WHEN region = 21 THEN 'Coastal Andhra'
+	WHEN region = 32 THEN 'Sierra'
+	WHEN region = 33 THEN  'Selva'
+	WHEN region = 88 THEN 'N/A'
+	WHEN region = 31 THEN 'Costa'
+	WHEN region = 51 THEN 'Northern Uplands'
+	WHEN region = 52 THEN 'Red River Delta'
+	WHEN region = 53 THEN 'Phu Yen'
+	WHEN region = 54 THEN 'Da Nang'
+	WHEN region = 55 THEN 'Highlands'
+	WHEN region = 56 THEN 'South Eastern'
+	WHEN region = 57 THEN 'Mekong River Delta'
+	WHEN region = 58 THEN 'Other'
+	 ELSE 'Null'
+	 END;
+UPDATE [Child].[Location]
+	SET yc =
+	 CASE
+	 WHEN yc = 0 THEN 'Older Cohort'
+	 WHEN yc = 1 THEN 'Younger Cohort'
+	 ELSE 'Null'
+	 END;
+
+UPDATE [Child].[Location]
+	SET childloc =
+	 CASE
+	 WHEN childloc = 0 THEN 'No'
+	 WHEN childloc = 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+	 END;
+
+  EXECUTE Transform_Location
+
+--Adding foreign key to the Location table
+
+	ALTER TABLE [Child].[Location] WITH NOCHECK
+	ADD CONSTRAINT FK_childRound
+	FOREIGN KEY (childid,round) REFERENCES [Child].[Demography]
+
+
+ /*****************TRANSFORMATIONS FOR TABLE 3***********************************/
+ ---Replace Encodings for the Child Physical Table
+
+	 CREATE PROCEDURE Transform_Physical
+ AS
+ BEGIN
+
+UPDATE [Child].[Physical]
+	SET stunting =
+	 CASE
+	 WHEN stunting = 0 THEN 'Not Stunted'
+	 WHEN stunting = 1 THEN 'Moderately Stunted'
+	 WHEN stunting = 2 THEN 'Severely Stunted'
+	 ELSE 'Null'
+	 END;
+	 END;
+	 
+	 EXECUTE Transform_Physical
+
+	 --Adding foreign key to the Child Phyical table
+	ALTER TABLE [Child].[Physical] WITH NOCHECK
+	ADD CONSTRAINT FK_Physical
+	FOREIGN KEY (childid,round) REFERENCES [Child].[Demography]
+
+
+ GO
+
+ /****************TRANSFORMATIONS FOR TABLE 4***********************************/
+--Replace Encodings on the Child Birth Immunization Table
+
+	 CREATE PROCEDURE Transform_Immunization
+ AS
+ BEGIN
+
+UPDATE [Child].[Immunization]
+	SET bwdoc =
+	 CASE
+	 WHEN bwdoc = 0 THEN 'No'
+	 WHEN bwdoc = 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+ UPDATE [Child].[Immunization]
+	SET delivery =
+	 CASE
+	 WHEN delivery = 0 THEN 'No'
+	 WHEN delivery = 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+
+UPDATE [Child].[Immunization]
+	SET tetanus =
+	 CASE
+	 WHEN tetanus = 0 THEN 'No'
+	 WHEN tetanus = 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+	 
+UPDATE [Child].[Immunization]
+	SET tetanus =
+	 CASE
+	 WHEN delivery = 0 THEN 'No'
+	 WHEN delivery = 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+	 
+UPDATE [Child].[Immunization]
+	SET bcg =
+	 CASE
+	 WHEN bcg = 0 THEN 'No'
+	 WHEN bcg = 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+
+UPDATE [Child].[Immunization]
+	SET measles =
+	 CASE
+	 WHEN measles = 0 THEN 'No'
+	 WHEN measles = 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+
+UPDATE [Child].[Immunization]
+	SET polio =
+	 CASE
+	 WHEN polio = 0 THEN 'No'
+	 WHEN polio = 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+UPDATE [Child].[Immunization]
+	SET dpt =
+	 CASE
+	 WHEN dpt = 0 THEN 'No'
+	 WHEN dpt = 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+ UPDATE [Child].[Immunization]
+	SET hib =
+	 CASE
+	 WHEN hib = 0 THEN 'No'
+	 WHEN hib = 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+	 END;
+	 EXECUTE Transform_Immunization
+
+	 --Adding foreign key to the Child Immunization table
+	ALTER TABLE [Child].[Immunization] WITH NOCHECK
+	ADD CONSTRAINT FK_ChildRoundBI
+	FOREIGN KEY (childid,round) REFERENCES [Child].[Demography]
+
+
+ /*************TRANSFORMATIONS FOR TABLE 5***********************************/
+	 ---Replace Encodings for the Child Health Table
+
+	 CREATE PROCEDURE Transform_Health
+ AS
+ BEGIN
+
+UPDATE [Child].[Health]
+	SET chmightdie =
+	 CASE
+	 WHEN chmightdie = 0 THEN 'No'
+	 WHEN chmightdie = 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+	 UPDATE [Child].[Health]
+	SET chillness =
+	 CASE
+	 WHEN chillness = 0 THEN 'No'
+	 WHEN chillness = 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+UPDATE [Child].[Health]
+	SET chinjury =
+	 CASE
+	 WHEN chinjury = 0 THEN 'No'
+	 WHEN chinjury = 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+
+UPDATE [Child].[Health]
+	SET chhprob =
+	 CASE
+	 WHEN chhprob = 0 THEN 'No'
+	 WHEN chhprob = 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+
+UPDATE [Child].[Health]
+	SET chdisability =
+	 CASE
+	 WHEN chdisability = 0 THEN 'No'
+	 WHEN chdisability = 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+
+UPDATE [Child].[Health]
+	SET chhrel =
+	 CASE
+	 WHEN chhrel = 1 THEN 'Same'
+	 WHEN chhrel = 2 THEN 'Better'
+	 WHEN chhrel = 3 THEN 'Worse'
+	 ELSE 'Null'
+	 END;
+UPDATE [Child].[Health]
+	SET chhealth =
+	 CASE
+	 WHEN chhealth = 1 THEN 'Very Poor'
+	 WHEN chhealth = 2 THEN 'Poor'
+	 WHEN chhealth = 3 THEN 'Average'
+	 WHEN chhealth = 4 THEN 'Good'
+	 WHEN chhealth = 5 THEN 'Very Good'
+	 ELSE 'Null'
+	 END;
+	 END;
+
+	 EXECUTE Transform_Health
+
+	  --Adding foreign key to the Child Health table
+	ALTER TABLE [Child].[Health] WITH NOCHECK
+	ADD CONSTRAINT FK_ChildRoundhealth
+	FOREIGN KEY (childid,round) REFERENCES [Child].[Demography]
+
+
+/*************TRANSFORMATIONS FOR TABLE 6***********************************/
+   ---Replace Encodings for the Child Smoke/Drink Table
+
+	 CREATE PROCEDURE Transform_Smoke_Drink
+ AS
+ BEGIN
+
+UPDATE [Child].[Smoke_Drink]
+	SET chsmoke =
+	 CASE
+	 WHEN chsmoke = 1 THEN 'Every day'
+	 WHEN chsmoke = 2 THEN 'At least once a day'
+	 WHEN chsmoke = 3 THEN 'At least once a month'
+	 WHEN chsmoke = 4 THEN 'Hardly ever'
+	 WHEN chsmoke = 5 THEN 'I never smoke cigarettes'
+	 ELSE 'Null'
+	 END;
+UPDATE [Child].[Smoke_Drink]
+	SET chalcohol =
+	 CASE
+	 WHEN chalcohol = 0 THEN 'No'
+	 WHEN chalcohol = 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+UPDATE [Child].[Smoke_Drink]
+	SET chrephealth2 =
+	 CASE
+	 WHEN chrephealth2 = 0 THEN 'No'
+	 WHEN chrephealth2 = 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+
+
+UPDATE [Child].[Smoke_Drink]
+	SET chrephealth3 =
+	 CASE
+	 WHEN chrephealth3 = 0 THEN 'No'
+	 WHEN chrephealth3 = 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+
+UPDATE [Child].[Smoke_Drink]
+	SET chrephealth4 =
+	 CASE
+	 WHEN chrephealth4 = 1 THEN 'Shop or Street Vendor'
+	 WHEN chrephealth4 = 2 THEN 'Family Planning Services or Health Facility'
+	 WHEN chrephealth4 = 3 THEN 'Other'
+	 WHEN chrephealth4 = 4 THEN 'I do not know what a condom is/where to get it'
+	 ELSE 'Null'
+	 END;
+
+	 END;
+	 EXECUTE Transform_Smoke_Drink
+
+	 --Adding foreign key to the Smoke_Drink table
+	ALTER TABLE [Child].[Smoke_Drink] WITH NOCHECK
+	ADD CONSTRAINT FK_ChildRoundSDR
+	FOREIGN KEY (childid,round) REFERENCES [Child].[Demography]
+
+
+ /*************TRANSFORMATIONS FOR TABLE 7***********************************/
+   ---Replace Encodings for the Child Education Table
+
+	 CREATE PROCEDURE Transform_Education
+ AS
+ BEGIN
+
+UPDATE [Child].[Education]
+	SET preprim =
+	 CASE
+	 WHEN preprim = 0 THEN 'No'
+	 WHEN preprim = 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+UPDATE [Child].[Education]
+	SET enrol =
+	 CASE
+	 WHEN enrol = 0 THEN 'No'
+	 WHEN enrol = 1 THEN 'Yes'
+	 WHEN enrol = 99 THEN 'Missing'
+	 WHEN enrol = 77 THEN 'NK'
+	 WHEN enrol = 88 THEN 'N/A'
+	 ELSE 'Null'
+	 END;
+UPDATE [Child].[Education]
+	SET levlread =
+	 CASE
+	 WHEN levlread = 1 THEN 'Cannot read anything'
+	 WHEN levlread = 2 THEN 'Reads letters'
+	 WHEN levlread = 3 THEN 'Reads words'
+	 WHEN levlread = 4 THEN 'Reads sentences'
+	 ELSE 'Null'
+	 END;
+
+UPDATE [Child].[Education]
+	SET levlwrit =
+	 CASE
+	 WHEN levlwrit = 1 THEN 'No'
+	 WHEN levlwrit = 2 THEN 'Yes, with difficulty or errors'
+	 WHEN levlwrit = 3 THEN 'Yes, without difficulty or errors'
+	 ELSE 'Null'
+	 END;
+
+UPDATE [Child].[Education]
+	SET literate =
+	 CASE
+	 WHEN literate = 0 THEN 'No'
+	 WHEN literate = 1 THEN 'Yes'
+	 ELSE 'Null'
+	 END;
+UPDATE [Child].[Education]
+	SET entype =
+	 CASE
+	WHEN entype = 1	THEN 'Private'
+	WHEN entype = 2	THEN 'Public (part student fees, part government funded)'
+	WHEN entype = 3	THEN 'Community (NGO/Charity/Religious)'
+	WHEN entype = 4	THEN 'Government funded'
+	WHEN entype = 5	THEN 'Others, specify'
+	WHEN entype = 77	THEN 'Not Known'
+	WHEN entype = 79	THEN 'Refused to answer'
+	WHEN entype = 88	THEN 'N/A'
+	 ELSE 'Null'
+	 END;
+	 END;
+	 EXECUTE Transform_Education
+
+	  --Adding foreign key to the Education table
+	ALTER TABLE [Child].[Education] WITH NOCHECK
+	ADD CONSTRAINT FK_ChildRoundEdu
+	FOREIGN KEY (childid,round) REFERENCES [Child].[Demography]
+
+ /*************TRANSFORMATIONS FOR TABLE 8***********************************/
+---Replace Encodings for the Household Head Table
+
+	 CREATE PROCEDURE Transform_Household_Head
+ AS
+ BEGIN
+
+UPDATE [Household].[Head]
+	SET headsex =
+	 CASE
+	 WHEN headsex= 1 THEN 'Male'
+	 WHEN headsex = 2 THEN 'Female'
+	 ELSE 'Null'
+	 END;
+UPDATE [Household].[Head]
+	SET headrel =
+	 CASE
+	 WHEN headrel = 0 THEN 'YL Child'
+	WHEN headrel = 1 THEN 'Biological Parent'
+	WHEN headrel = 2 THEN 'Non Biological Parent'
+	WHEN headrel = 3 THEN 'Grandparent'
+	WHEN headrel = 4 THEN 'Uncle/Aunt'
+	WHEN headrel = 5 THEN 'Sibling'
+	WHEN headrel = 6 THEN 'Other Relative'
+	WHEN headrel = 7 THEN 'Non Other Relative'
+	WHEN headrel = 8 THEN 'Partner/Spouse of YL Child'
+	WHEN headrel = 9 THEN 'Father in-law/ Mother in-law'
+	 ELSE 'Null'
+	 END;
+
+	 END;
+
+	EXECUTE Transform_Household_Head
+
+	  --Adding foreign key to the Household Head table
+	ALTER TABLE [Household].[Head] WITH NOCHECK
+	ADD CONSTRAINT FK_ChildRoundHH
+	FOREIGN KEY (childid,round) REFERENCES [Child].[Demography]
+
+
+/************************GENERATING VIEWS FOR REPORTS************************/
+
+/*******REPORT 1 - Skilled Birth Delivery and Child Death************/
+ CREATE VIEW v_skilled_delivery
+ AS
+ WITH tab AS  ( SELECT country =  CASE WHEN childid like 'et%' THEN 'Ethiopia'
+ WHEN childid LIKE 'pe%' THEN 'Peru'
+ WHEN childid LIKE 'in%' THEN 'India'
+ WHEN childid LIKE 'vn%' THEN 'Vietnam'
+ END, delivery, childid
+ FROM Child.Immunization)
+ SELECT country, delivery AS Skilled_Delivery, COUNT(chmightdie) AS Child_Death
+ FROM tab
+INNER JOIN [Child].[Health]
+ ON tab.[childid] = [Health].[childid]
+ WHERE country != 'Null'
+  GROUP BY country, delivery
+
+/*********REPORT 2 -Polio Immunization and Child Physical Health*******/
+CREATE VIEW v_physical_health
+ AS
+SELECT  stunting AS Physical_Health, polio AS Polio_Vaccine, 
+COUNT(polio) AS Number
+FROM [Child].[Immunization]
+INNER JOIN [Child].[Physical]
+ON [Immunization].[childid] = [Physical].[childid]
+WHERE Immunization.childid LIKE 'PE%'
+GROUP BY stunting, polio
+
+/*********REPORT 3 - Child Location and Health Status**********/
+CREATE VIEW v_location_wellbeing
+AS
+SELECT typesite, COUNT(chhealth) AS Good_Health
+FROM [Child].[Location] 
+INNER JOIN [Child].[Health]
+ON [Location].[childid] = [Health].[childid]
+WHERE [Location].[childid] LIKE 'VN%' AND chhealth = 'Good' 
+AND typesite is NOT Null
+GROUP BY typesite
+
+/**********REPORT 4 - Location and Child Alchohol Intake***********/
+CREATE VIEW v_alcohol_intake
+ AS
+SELECT typesite, COUNT(chalcohol) AS alcohol_intake
+FROM [Child].[Location]
+INNER JOIN [Child].[Smoke_Drink]
+ON [Location].[childid] = [Smoke_Drink].[childid]
+WHERE [Location].[childid] LIKE 'VN%' AND typesite != 'Null'
+GROUP BY typesite
+
+/***********REPORT 5 - Household Head Education and Child Literacy******/
+CREATE VIEW v_household_head
+AS
+SELECT headedu, COUNT(literate) AS Not_Literate
+FROM [Child].[Education]
+INNER JOIN [Household].[Head]
+ON [Education].[childid]=[Head].[childid]
+WHERE literate = 'No' AND [Education].[childid] LIKE 'IN%' 
+GROUP BY headedu
+
+/********REPORT 6 - Child Religion and Alcohol Intake***********/
+CREATE VIEW v_religion
+AS
+SELECT chldrel AS Child_Religion, COUNT(chalcohol) AS Takes_Alcohol
+FROM [Child].[Demography]
+INNER JOIN [Child].[Smoke_Drink]
+ON [Demography].[childid]=[Smoke_Drink].[childid]
+WHERE chalcohol = 'Yes' AND [Demography].[childid] LIKE 'IN%' 
+GROUP BY chldrel
+ORDER BY COUNT(chalcohol) DESC
+
+/**********REPORT 7 - Child Location and Knowledge of Reproductive Health*********/
+CREATE VIEW v_reproductive_health
+AS
+SELECT typesite, COUNT(chrephealth2) AS Reproductive_Health
+FROM [Child].[Location] 
+INNER JOIN [Child].[Smoke_Drink]
+ON [Location].[childid] = [Smoke_Drink].[childid]
+WHERE [Location].[childid] LIKE 'VN%' AND typesite is NOT NULL
+GROUP BY typesite
+
+/*******************************END********************************************************/
